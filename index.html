@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Finderr - Discover Your Next Favorite Read</title>
+    <meta name="description" content="Get personalized book recommendations powered by AI. Tell us what you're in the mood for, and we'll find your perfect next read.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --cream: #FDF6E3;
+            --cream-dark: #F5ECD7;
+            --warm-white: #FFFEF9;
+            --burgundy: #8B2635;
+            --burgundy-light: #A63446;
+            --burgundy-dark: #6B1D29;
+            --forest: #2D4A3E;
+            --amber: #D4A373;
+            --amber-light: #E8C49A;
+            --text-primary: #2C2416;
+            --text-secondary: #5C5347;
+            --text-muted: #8B8579;
+            --shadow-soft: 0 4px 20px rgba(44, 36, 22, 0.08);
+            --shadow-medium: 0 8px 30px rgba(44, 36, 22, 0.12);
+            --shadow-lifted: 0 12px 40px rgba(44, 36, 22, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, sans-serif;
+            background: var(--cream);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Paper texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Decorative floating books */
+        .floating-decoration {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.06;
+            z-index: 0;
+        }
+
+        .book-stack-left {
+            top: 15%;
+            left: -20px;
+            width: 120px;
+            transform: rotate(-12deg);
+            animation: float-gentle 8s ease-in-out infinite;
+        }
+
+        .book-stack-right {
+            bottom: 20%;
+            right: -30px;
+            width: 140px;
+            transform: rotate(8deg);
+            animation: float-gentle 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0) rotate(-12deg); }
+            50% { transform: translateY(-15px) rotate(-10deg); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--cream) 60%, transparent);
+        }
+
+        .logo {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--burgundy);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--burgundy);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 120px 24px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Home Section */
+        #main-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 680px;
+            margin-bottom: 48px;
+            animation: fade-up 0.8s ease-out;
+        }
+
+        @keyframes fade-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--burgundy);
+            position: relative;
+        }
+
+        .hero h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--amber-light);
+            z-index: -1;
+            transform: skewX(-5deg);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(139, 38, 53, 0.08);
+            animation: fade-up 0.8s ease-out 0.2s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--burgundy), var(--amber));
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-label .optional {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1rem;
+            border: 2px solid var(--cream-dark);
+            border-radius: 12px;
+            background: var(--cream);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-input:focus {
+            border-color: var(--burgundy);
+            background: var(--warm-white);
+            box-shadow: 0 0 0 4px rgba(139, 38, 53, 0.1);
+        }
+
+        .search-button {
+            width: 100%;
+            padding: 18px 32px;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: var(--burgundy);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .search-button:hover {
+            background: var(--burgundy-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lifted);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+        }
+
+        .search-button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .search-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Example prompts */
+        .example-prompts {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--cream-dark);
+        }
+
+        .example-prompts p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .prompt-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prompt-tag {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--cream);
+            border: 1px solid var(--cream-dark);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .prompt-tag:hover {
+            background: var(--amber-light);
+            border-color: var(--amber);
+            color: var(--text-primary);
+        }
+
+        /* Results Section */
+        .results-section {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 48px;
+            display: none;
+        }
+
+        .results-section.visible {
+            display: block;
+            animation: fade-up 0.5s ease-out;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .results-header h2 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .results-count {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .refresh-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--burgundy);
+            background: rgba(139, 38, 53, 0.08);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-button:hover {
+            background: var(--burgundy);
+            color: white;
+        }
+
+        .refresh-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Book Card */
+        .book-card {
+            background: var(--warm-white);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(139, 38, 53, 0.05);
+            display: flex;
+            gap: 24px;
+            transition: all 0.3s ease;
+            animation: card-appear 0.5s ease-out backwards;
+        }
+
+        .book-card:nth-child(1) { animation-delay: 0.1s; }
+        .book-card:nth-child(2) { animation-delay: 0.2s; }
+        .book-card:nth-child(3) { animation-delay: 0.3s; }
+        .book-card:nth-child(4) { animation-delay: 0.4s; }
+        .book-card:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes card-appear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lifted);
+        }
+
+        .book-cover {
+            width: 100px;
+            height: 150px;
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .book-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-info h3 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .book-info .author {
+            font-size: 0.95rem;
+            color: var(--burgundy);
+            margin-bottom: 12px;
+        }
+
+        .book-info .description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .book-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--burgundy);
+            background: rgba(139, 38, 53, 0.08);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+
+        .book-link:hover {
+            background: var(--burgundy);
+            color: white;
+        }
+
+        .book-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading.visible {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--cream-dark);
+            border-top-color: var(--burgundy);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fade-up 0.5s ease-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        .page-card {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .page-card h2 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .page-card h3 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin: 32px 0 16px;
+        }
+
+        .page-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .page-card ul {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+            margin-left: 24px;
+        }
+
+        .page-card li {
+            margin-bottom: 8px;
+        }
+
+        .page-card a {
+            color: var(--burgundy);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .page-card a:hover {
+            text-decoration: underline;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--burgundy);
+            background: transparent;
+            border: 2px solid var(--burgundy);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 32px;
+        }
+
+        .back-button:hover {
+            background: var(--burgundy);
+            color: white;
+        }
+
+        /* Blog Styles */
+        .blog-grid {
+            display: grid;
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .blog-preview {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--cream-dark);
+        }
+
+        .blog-preview:hover {
+            background: var(--warm-white);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .blog-preview-title {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .blog-preview-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .blog-preview-excerpt {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .read-more {
+            color: var(--burgundy);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .blog-post-date {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--burgundy);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .nav-links {
+                gap: 16px;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+            }
+
+            main {
+                padding: 100px 16px 40px;
+            }
+
+            .search-card, .page-card {
+                padding: 28px 20px;
+            }
+
+            .book-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .book-cover {
+                width: 120px;
+                height: 180px;
+                margin: 0 auto;
+            }
+
+            .book-link {
+                align-self: center;
+            }
+
+            .floating-decoration {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Decorative Elements -->
+    <svg class="floating-decoration book-stack-left" viewBox="0 0 100 120" fill="currentColor">
+        <rect x="10" y="0" width="60" height="80" rx="2" transform="rotate(-5 40 40)"/>
+        <rect x="15" y="10" width="60" height="80" rx="2" transform="rotate(3 45 50)"/>
+        <rect x="5" y="20" width="60" height="80" rx="2" transform="rotate(-8 35 60)"/>
+    </svg>
+    <svg class="floating-decoration book-stack-right" viewBox="0 0 100 120" fill="currentColor">
+        <rect x="20" y="5" width="55" height="75" rx="2" transform="rotate(6 47 42)"/>
+        <rect x="25" y="15" width="55" height="75" rx="2" transform="rotate(-4 52 52)"/>
+        <rect x="15" y="25" width="55" height="75" rx="2" transform="rotate(10 42 62)"/>
+    </svg>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo" onclick="showSection('main'); return false;">
+            <svg class="logo-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6 C4 4, 6 2, 16 2 C26 2, 28 4, 28 6 L28 26 C28 28, 26 30, 16 30 C6 30, 4 28, 4 26 Z"/>
+                <path d="M16 2 L16 30"/>
+                <path d="M4 8 C8 10, 12 10, 16 8"/>
+                <path d="M16 8 C20 10, 24 10, 28 8"/>
+            </svg>
+            Book Finderr
+        </a>
+        <div class="nav-links">
+            <a href="#" onclick="showSection('blog'); return false;">Blog</a>
+            <a href="#" onclick="showSection('about'); return false;">About</a>
+            <a href="#" onclick="showSection('privacy'); return false;">Privacy</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Main Search Section -->
+        <div id="main-section">
+            <div class="hero">
+                <h1>Find your next <span>favorite book</span></h1>
+                <p>Tell us what you're in the mood for, share your favorite authors and books you've loved, and our AI will recommend the perfect reads for you.</p>
+            </div>
+
+            <div class="search-card">
+                <form id="recommendation-form">
+                    <div class="form-group">
+                        <label class="form-label" for="genre-input">What kind of book are you looking for?</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="genre-input"
+                            placeholder="e.g., A gripping thriller set in Tokyo, cozy fantasy with found family..."
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="authors-input">Authors you like</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="authors-input"
+                            placeholder="e.g., Stephen King, Brandon Sanderson, Agatha Christie"
+                            maxlength="150"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="books-input">Books you've enjoyed</label>
+                        <input 
+                            type="text"
+                            class="form-input" 
+                            id="books-input"
+                            placeholder="e.g., The Name of the Wind, Gone Girl, Dune, Harry Potter series..."
+                            maxlength="300"
+                        >
+                    </div>
+
+                    <button type="submit" class="search-button" id="search-button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        Find My Perfect Books
+                    </button>
+                </form>
+
+                <div class="example-prompts">
+                    <p>Try these:</p>
+                    <div class="prompt-tags">
+                        <span class="prompt-tag" onclick="setPrompt('A cozy mystery with a small town setting')">Cozy mystery</span>
+                        <span class="prompt-tag" onclick="setPrompt('Epic fantasy with complex magic systems')">Epic fantasy</span>
+                        <span class="prompt-tag" onclick="setPrompt('Sci-fi books like The Martian')">Sci-fi adventure</span>
+                        <span class="prompt-tag" onclick="setPrompt('Heartwarming romance with humor')">Romantic comedy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Analyzing your preferences and finding perfect matches...</p>
+            </div>
+
+            <!-- Results -->
+            <div class="results-section" id="results-section">
+                <div class="results-header">
+                    <h2>Your Recommendations</h2>
+                    <button class="refresh-button" id="refresh-button" onclick="getRecommendations()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+                            <path d="M21 3v5h-5"/>
+                        </svg>
+                        Try different books
+                    </button>
+                </div>
+                <div id="results-container"></div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div id="about-section" class="page-section">
+            <button class="back-button" onclick="showSection('main')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Book Finderr
+            </button>
+            <div class="page-card">
+                <h2>About Book Finderr</h2>
+                
+                <p>Book Finderr is a personalized book recommendation service that helps readers discover their next favorite book. Our intelligent recommendation system analyzes your reading preferences, favorite authors, and beloved books to suggest titles that perfectly match your taste.</p>
+                
+                <h3>How It Works</h3>
+                <ul>
+                    <li><strong>Tell us what you're looking for</strong> — Describe the type of book you want to read, whether it's a specific genre, mood, or theme</li>
+                    <li><strong>Share your preferences</strong> — Optionally tell us about authors you love and books you've enjoyed</li>
+                    <li><strong>Get personalized recommendations</strong> — Receive 5 carefully selected book suggestions with detailed explanations of why each one matches your taste</li>
+                    <li><strong>Discover your next great read</strong> — Click through to Amazon to learn more or purchase</li>
+                </ul>
+                
+                <h3>Our Mission</h3>
+                <p>We believe that the perfect book is out there for every reader. The challenge isn't a lack of great books—it's finding the right one at the right time. With millions of books available, discovering stories that truly resonate with your unique taste can feel overwhelming.</p>
+                
+                <p>That's why we built Book Finderr. We wanted to create a tool that goes beyond generic bestseller lists and actually understands what makes a book perfect for you. By considering not just what you're looking for, but also the authors and books you've already loved, we can find recommendations that feel personally curated.</p>
+                
+                <h3>Why AI-Powered Recommendations?</h3>
+                <p>Traditional recommendation systems often rely on simple patterns: "people who bought X also bought Y." While useful, this approach misses the nuance of why you loved a particular book. Was it the writing style? The complex characters? The atmospheric setting? The philosophical themes?</p>
+                
+                <p>Our AI understands these subtleties. When you tell us you loved "The Name of the Wind," it doesn't just recommend other fantasy books—it considers Rothfuss's lyrical prose, the academic setting, the unreliable narrator, and the slow-burn character development. This lets us find books that capture what you actually enjoyed, even if they're in different genres.</p>
+                
+                <p>Happy reading!</p>
+            </div>
+        </div>
+
+        <!-- Privacy Section -->
+        <div id="privacy-section" class="page-section">
+            <button class="back-button" onclick="showSection('main')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Book Finderr
+            </button>
+            <div class="page-card">
+                <h2>Privacy Policy</h2>
+                
+                <p>Your privacy matters to us. This policy explains how Book Finderr handles your information.</p>
+                
+                <h3>Information We Collect</h3>
+                <p>When you use Book Finderr, we process the information you provide in the search form (your book preferences, favorite authors, and enjoyed books) to generate personalized recommendations. This information is sent to our AI service to create your recommendations.</p>
+                
+                <h3>How We Use Your Information</h3>
+                <p>Your search queries are used solely to generate book recommendations. We do not store your individual searches long-term or link them to any personal identifying information.</p>
+                
+                <h3>Analytics</h3>
+                <p>We use Google Analytics to understand how visitors use our site. This helps us improve Book Finderr. Google Analytics collects anonymous data about page views, device types, and general location (country/city level). This data is aggregated and does not identify individual users.</p>
+                
+                <h3>Amazon Associates</h3>
+                <p>Book Finderr participates in the Amazon Associates program. When you click through to Amazon from our recommendations, we may earn a small commission if you make a purchase. This doesn't affect the price you pay. Amazon has its own privacy policy governing their site.</p>
+                
+                <h3>Data Storage</h3>
+                <p>We do not create user accounts or store personal data. Your book preferences are processed in real-time and are not permanently stored on our servers.</p>
+                
+                <h3>Cookies</h3>
+                <p>We use minimal cookies necessary for the site to function and for analytics purposes. You can control cookie settings in your browser.</p>
+                
+                <h3>Contact</h3>
+                <p>If you have any questions about this privacy policy, please reach out to us.</p>
+                
+                <p><em>Last updated: October 2025</em></p>
+            </div>
+        </div>
+
+        <!-- Blog Section -->
+        <div id="blog-section" class="page-section">
+            <button class="back-button" onclick="showSection('main')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Book Finderr
+            </button>
+            <div class="page-card">
+                <h2>Book Finderr Blog</h2>
+                <p>Discover book recommendations, reading tips, and insights into finding your next great read.</p>
+
+                <div class="blog-grid">
+                    <div class="blog-preview" onclick="showSection('blog-post-1')">
+                        <div class="blog-preview-title">Welcome to Book Finderr: Your Personal Book Discovery Tool</div>
+                        <div class="blog-preview-date">October 2, 2025</div>
+                        <div class="blog-preview-excerpt">Finding your next great read shouldn't be overwhelming. With millions of books available, how do you discover the perfect story that matches your unique taste?</div>
+                        <span class="read-more">Read more →</span>
+                    </div>
+
+                    <div class="blog-preview" onclick="showSection('blog-post-2')">
+                        <div class="blog-preview-title">Best Fantasy Books of 2025</div>
+                        <div class="blog-preview-date">October 2, 2025</div>
+                        <div class="blog-preview-excerpt">From epic adventures to cozy fantasies, 2025 has delivered some incredible fantasy novels. Here are our top picks for fantasy lovers this year.</div>
+                        <span class="read-more">Read more →</span>
+                    </div>
+
+                    <div class="blog-preview" onclick="showSection('blog-post-3')">
+                        <div class="blog-preview-title">Best Mystery & Thriller Books of 2025</div>
+                        <div class="blog-preview-date">October 2, 2025</div>
+                        <div class="blog-preview-excerpt">Looking for edge-of-your-seat suspense? These mystery and thriller novels will keep you guessing until the very last page.</div>
+                        <span class="read-more">Read more →</span>
+                    </div>
+
+                    <div class="blog-preview" onclick="showSection('blog-post-4')">
+                        <div class="blog-preview-title">How to Find Your Next Book When You're in a Reading Slump</div>
+                        <div class="blog-preview-date">October 2, 2025</div>
+                        <div class="blog-preview-excerpt">Every reader experiences them: those frustrating periods when nothing seems appealing. Here's how to break through and rediscover your love of reading.</div>
+                        <span class="read-more">Read more →</span>
+                    </div>
+
+                    <div class="blog-preview" onclick="showSection('blog-post-5')">
+                        <div class="blog-preview-title">Books Like Dune: Epic Science Fiction Recommendations</div>
+                        <div class="blog-preview-date">October 2, 2025</div>
+                        <div class="blog-preview-excerpt">If you've been captivated by Arrakis and find yourself craving more expansive, thought-provoking science fiction, here are the books for you.</div>
+                        <span class="read-more">Read more →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Post 1 -->
+        <div id="blog-post-1-section" class="page-section">
+            <button class="back-button" onclick="showSection('blog')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Blog
+            </button>
+            <div class="page-card">
+                <h2>Welcome to Book Finderr: Your Personal Book Discovery Tool</h2>
+                <p class="blog-post-date">October 2, 2025</p>
+
+                <p>Finding your next great read shouldn't be overwhelming. With millions of books available across countless genres, authors, and styles, discovering the perfect story that matches your unique taste can feel impossible.</p>
+
+                <p>That's exactly why we built Book Finderr.</p>
+
+                <h3>The Problem with Book Discovery</h3>
+                <p>Traditional book recommendation methods fall short in several ways:</p>
+                <ul>
+                    <li>Bestseller lists show popular books, but popular doesn't always mean right for you</li>
+                    <li>Generic "top 10" lists rarely account for your specific preferences</li>
+                    <li>Asking friends works, but they might not share your exact taste</li>
+                    <li>Browsing bookstores or Amazon can take hours with uncertain results</li>
+                </ul>
+
+                <h3>How Book Finderr Works</h3>
+                <p>Our tool uses advanced AI to understand what makes a book perfect for you. Instead of relying on generic popularity metrics, we consider three key factors:</p>
+                
+                <p><strong>1. What you're looking for right now</strong> — Maybe you're in the mood for a cozy mystery, an epic fantasy adventure, or a thought-provoking literary novel. Your current reading mood matters.</p>
+                
+                <p><strong>2. Authors you already love</strong> — The writers you enjoy tell us a lot about your preferences in style, pacing, and themes. We use this to find similar voices you haven't discovered yet.</p>
+                
+                <p><strong>3. Books that resonated with you</strong> — When you tell us which books you've loved, we can identify patterns in your taste that go beyond simple genre categories.</p>
+
+                <h3>Start Your Journey</h3>
+                <p>Ready to find your next favorite book? <a href="#" onclick="showSection('main')">Try Book Finderr</a> and tell us what you're looking for. Whether you want comfort reading, something completely different from your usual genres, or a guaranteed page-turner, we'll help you find it.</p>
+
+                <p>Your next great read is waiting. You just need to find it.</p>
+            </div>
+        </div>
+
+        <!-- Blog Post 2 -->
+        <div id="blog-post-2-section" class="page-section">
+            <button class="back-button" onclick="showSection('blog')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Blog
+            </button>
+            <div class="page-card">
+                <h2>Best Fantasy Books of 2025</h2>
+                <p class="blog-post-date">October 2, 2025</p>
+
+                <p>Fantasy literature continues to evolve, offering readers everything from epic multi-book sagas to intimate character studies set in magical worlds. 2025 has been an exceptional year for the genre, delivering fresh voices alongside beloved authors returning with new works.</p>
+
+                <h3>Epic Fantasy</h3>
+                <p>For readers who love sprawling worlds and complex magic systems, epic fantasy remains the gold standard. This year has seen continuations of beloved series alongside ambitious new beginnings. Look for books that balance intricate world-building with compelling character arcs—the best epic fantasies make you care about the people as much as the politics and magic.</p>
+
+                <h3>Cozy Fantasy</h3>
+                <p>The cozy fantasy subgenre has exploded in popularity, offering readers magical worlds without the high stakes of traditional epic fantasy. These books often feature found family dynamics, small-scale conflicts, and plenty of comfort. If you loved "Legends & Lattes," the cozy fantasy shelf has expanded considerably.</p>
+
+                <h3>Romantasy</h3>
+                <p>The blend of fantasy and romance continues to dominate bestseller lists. From enemies-to-lovers in magical academies to fae courts filled with political intrigue and passion, romantasy offers readers the best of both genres. These books prove that you don't have to choose between a great love story and an immersive fantasy world.</p>
+
+                <h3>Dark Fantasy</h3>
+                <p>For those who prefer their fantasy with moral ambiguity and higher stakes, dark fantasy delivers. These books often feature morally grey protagonists, unflinching violence, and complex ethical questions. They remind us that fantasy can be just as nuanced and challenging as literary fiction.</p>
+
+                <h3>Find Your Perfect Fantasy</h3>
+                <p>Not sure which fantasy subgenre fits your mood? <a href="#" onclick="showSection('main')">Try Book Finderr</a> and tell us what you're looking for. Whether you want something cozy and comforting or dark and intense, we'll find your perfect match.</p>
+            </div>
+        </div>
+
+        <!-- Blog Post 3 -->
+        <div id="blog-post-3-section" class="page-section">
+            <button class="back-button" onclick="showSection('blog')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Blog
+            </button>
+            <div class="page-card">
+                <h2>Best Mystery & Thriller Books of 2025</h2>
+                <p class="blog-post-date">October 2, 2025</p>
+
+                <p>The mystery and thriller genre remains one of the most diverse and exciting categories in publishing. From cozy mysteries set in charming small towns to psychological thrillers that will keep you up all night, 2025 has delivered page-turners for every type of reader.</p>
+
+                <h3>Psychological Thrillers</h3>
+                <p>The psychological thriller continues to dominate, with authors crafting increasingly complex narratives about unreliable narrators, hidden secrets, and the darkness that lurks beneath ordinary surfaces. These books ask us to question everything we read—and everyone we meet.</p>
+
+                <h3>Cozy Mysteries</h3>
+                <p>Not everyone wants their mysteries dark and disturbing. Cozy mysteries offer the puzzle and satisfaction of solving a crime without the graphic violence or bleak worldview. Often featuring amateur sleuths in charming settings—bookshops, bakeries, small towns—cozies prove that mysteries can be comfort reads too.</p>
+
+                <h3>Legal Thrillers</h3>
+                <p>The courtroom drama remains compelling, with authors finding new ways to explore justice, corruption, and the gray areas of law. Whether featuring defense attorneys, prosecutors, or legal professionals caught in dangerous situations, legal thrillers offer insight into systems most of us never see from the inside.</p>
+
+                <h3>Police Procedurals</h3>
+                <p>For readers who love the investigative process, police procedurals deliver meticulous detail about how crimes are actually solved. The best in this subgenre balance technical accuracy with compelling characters and commentary on policing itself.</p>
+
+                <h3>Find Your Next Thriller</h3>
+                <p>Looking for your next unputdownable thriller? <a href="#" onclick="showSection('main')">Try Book Finderr</a> and tell us what kind of mystery you're craving. Whether you want Agatha Christie-style puzzles, Gillian Flynn-esque psychological suspense, or Lee Child action, we'll find books perfectly suited to your taste.</p>
+            </div>
+        </div>
+
+        <!-- Blog Post 4 -->
+        <div id="blog-post-4-section" class="page-section">
+            <button class="back-button" onclick="showSection('blog')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Blog
+            </button>
+            <div class="page-card">
+                <h2>How to Find Your Next Book When You're in a Reading Slump</h2>
+                <p class="blog-post-date">October 2, 2025</p>
+
+                <p>Every reader experiences them: those frustrating periods when nothing seems appealing, when you start and abandon multiple books, when your once-beloved reading habit feels like a chore. Reading slumps are completely normal, but they don't have to last forever.</p>
+
+                <h3>Why Reading Slumps Happen</h3>
+                <p>Reading slumps have many causes. Sometimes you're genuinely too stressed or busy to focus on fiction. Other times, you've read too many similar books and need something fresh. You might be between genres, having exhausted your current favorites without discovering new interests. Or perhaps you're comparing every book to an exceptional recent read and everything pales in comparison.</p>
+
+                <h3>Strategies to Break Through</h3>
+
+                <p><strong>1. Change Your Format</strong></p>
+                <p>If physical books aren't working, try audiobooks during commutes or chores. E-readers offer convenience and instant access. Graphic novels provide visual engagement alongside storytelling. Sometimes the medium matters as much as the message.</p>
+
+                <p><strong>2. Go Short</strong></p>
+                <p>Don't force yourself through a 600-page epic. Try novellas, short story collections, or quick contemporary reads. Finishing something—anything—can rebuild momentum and confidence.</p>
+
+                <p><strong>3. Revisit a Favorite</strong></p>
+                <p>There's no shame in rereading beloved books. The comfort and familiarity of a treasured story can reignite your love of reading without the pressure of something new.</p>
+
+                <p><strong>4. Switch Genres Completely</strong></p>
+                <p>If fantasy isn't working, try memoir. If thrillers feel stale, explore literary fiction or romance. Sometimes your brain needs different storytelling styles or subject matter.</p>
+
+                <p><strong>5. Lower the Stakes</strong></p>
+                <p>Stop trying to read "important" books or clearing your TBR list. Read purely for enjoyment without guilt. That romance novel, middle-grade adventure, or celebrity memoir you're curious about? Read it. Permission granted.</p>
+
+                <p><strong>6. Take a Complete Break</strong></p>
+                <p>Sometimes the best solution is stepping away entirely. Watch movies, play games, pursue other hobbies. When reading becomes obligation rather than pleasure, a break might be exactly what you need. You'll return when you're ready.</p>
+
+                <h3>Find Your Slump-Breaking Book</h3>
+                <p>Stuck in a reading slump and need the perfect book to break through? <a href="#" onclick="showSection('main')">Try Book Finderr</a> and describe exactly what you're looking for. Whether you need comfort reading, something completely different from your usual genres, or a guaranteed page-turner, we'll help you find it.</p>
+
+                <p>Your next great read is waiting. You just need to find it.</p>
+            </div>
+        </div>
+
+        <!-- Blog Post 5 -->
+        <div id="blog-post-5-section" class="page-section">
+            <button class="back-button" onclick="showSection('blog')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Blog
+            </button>
+            <div class="page-card">
+                <h2>Books Like Dune: Epic Science Fiction Recommendations</h2>
+                <p class="blog-post-date">October 2, 2025</p>
+
+                <p>Frank Herbert's Dune stands as one of science fiction's greatest achievements—a masterwork of world-building, political intrigue, ecological themes, and philosophical depth. If you've been captivated by the desert planet Arrakis and find yourself craving more expansive, thought-provoking science fiction, you're not alone.</p>
+
+                <h3>What Makes Dune Special?</h3>
+                <p>Dune succeeds on multiple levels simultaneously. It's an adventure story featuring Paul Atreides' transformation from noble's son to messianic figure. It's a political thriller about dynastic warfare and resource control. It's an ecological meditation on humanity's relationship with the environment. And it's a philosophical exploration of prescience, free will, and the danger of charismatic leaders.</p>
+
+                <p>Finding books that capture all of these elements is challenging. But understanding which aspects resonated most with you helps narrow the search.</p>
+
+                <h3>For World-Building Lovers</h3>
+                <p>If Dune's meticulously constructed universe captivated you—the cultures, religions, technology, and ecosystems—look for science fiction that prioritizes deep world-building. The best examples create settings that feel lived-in, with histories and details that extend far beyond what appears on the page.</p>
+
+                <h3>For Political Intrigue Fans</h3>
+                <p>The power struggles between Houses, the Spacing Guild, the Bene Gesserit, and CHOAM make Dune as much political thriller as science fiction. Readers drawn to this aspect should seek space opera with complex factions and machinations.</p>
+
+                <h3>For Philosophical Readers</h3>
+                <p>Herbert wove deep themes throughout Dune—the nature of prophecy, the dangers of messiahs, humanity's evolutionary potential. Science fiction has a rich tradition of using speculative settings to explore philosophical questions. Seek out authors known for ideas-driven narratives.</p>
+
+                <h3>Modern Space Opera</h3>
+                <p>Modern space opera has evolved considerably, offering both entertainment and substance. Contemporary authors blend action with thoughtful themes, creating accessible entry points for readers who want epic scope without overwhelming complexity.</p>
+
+                <h3>Get Personalized Sci-Fi Recommendations</h3>
+                <p>Want science fiction recommendations tailored to what you loved about Dune? <a href="#" onclick="showSection('main')">Try Book Finderr</a> and tell us what aspects of Dune captivated you. We'll find epic science fiction that matches your specific interests, whether that's political intrigue, expansive world-building, philosophical depth, or all of the above.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Made with ♥ for book lovers everywhere</p>
+        <p style="margin-top: 8px;">
+            <a href="#" onclick="showSection('blog'); return false;">Blog</a> · 
+            <a href="#" onclick="showSection('about'); return false;">About</a> · 
+            <a href="#" onclick="showSection('privacy'); return false;">Privacy</a>
+        </p>
+    </footer>
+
+    <script>
+        // YOUR AMAZON ASSOCIATES ID - Replace with your actual ID
+        const AMAZON_ASSOCIATE_ID = 'your-associate-id-20';
+        
+        // YOUR API ENDPOINT - Replace with your actual backend URL
+        const API_ENDPOINT = 'https://bookfinderr.com/.netlify/functions/get-recommendations';
+
+        // DOM Elements
+        const form = document.getElementById('recommendation-form');
+        const genreInput = document.getElementById('genre-input');
+        const authorsInput = document.getElementById('authors-input');
+        const booksInput = document.getElementById('books-input');
+        const searchButton = document.getElementById('search-button');
+        const loading = document.getElementById('loading');
+        const resultsSection = document.getElementById('results-section');
+        const resultsContainer = document.getElementById('results-container');
+
+        // Page navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('main-section').style.display = 'none';
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show requested section
+            if (sectionId === 'main') {
+                document.getElementById('main-section').style.display = 'flex';
+            } else {
+                const section = document.getElementById(sectionId + '-section');
+                if (section) {
+                    section.classList.add('active');
+                }
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Set prompt from example tags
+        function setPrompt(text) {
+            genreInput.value = text;
+            genreInput.focus();
+        }
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            getRecommendations();
+        });
+
+        // Get book recommendations
+        async function getRecommendations() {
+            const genre = genreInput.value.trim();
+            const authors = authorsInput.value.trim();
+            const books = booksInput.value.trim();
+
+            if (!genre && !authors && !books) {
+                genreInput.focus();
+                return;
+            }
+
+            // Show loading, hide and clear results
+            loading.classList.add('visible');
+            resultsSection.classList.remove('visible');
+            resultsContainer.innerHTML = '';
+            searchButton.disabled = true;
+
+            try {
+    const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ genre, authors, books })
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to get recommendations');
+    }
+
+    const bookResults = await response.json();
+               
+
+                displayResults(bookResults);
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultsContainer.innerHTML = `
+                    <div class="book-card" style="text-align: center;">
+                        <p style="color: var(--text-secondary);">
+                            Something went wrong. Please try again in a moment.
+                        </p>
+                    </div>
+                `;
+                resultsSection.classList.add('visible');
+            } finally {
+                loading.classList.remove('visible');
+                searchButton.disabled = false;
+            }
+        }
+
+        // Display book results
+        function displayResults(books) {
+            resultsContainer.innerHTML = books.map((book, index) => `
+                <div class="book-card">
+                    <div class="book-cover">
+                        ${book.title.charAt(0)}
+                    </div>
+                    <div class="book-info">
+                        <h3>${book.title}</h3>
+                        <p class="author">by ${book.author}</p>
+                        <p class="description">${book.description}</p>
+                        <a href="https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.author)}&tag=bookfinder252-22" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="book-link">
+                            View on Amazon
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsSection.classList.add('visible');
+            
+            // Smooth scroll to results
+            setTimeout(() => {
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
