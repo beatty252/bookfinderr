@@ -1,0 +1,9 @@
+---
+layout: base.njk
+---
+<article class="blog-post">
+    <h1>{{ title }}</h1>
+    <p class="date">{{ date | date: "%B %d, %Y" }}</p>
+    {{ content | safe }}
+    <a href="/blog/" class="back-link">← Back to Blog</a>
+</article>
