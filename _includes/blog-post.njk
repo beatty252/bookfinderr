@@ -2,8 +2,12 @@
 layout: base.njk
 ---
 <article class="blog-post">
+    <a href="/" class="back-link" style="margin-bottom: 2rem; display: inline-block;">← Back to Book Finderr</a>
     <h1>{{ title }}</h1>
-    <p class="date">{{ date | date: "%B %d, %Y" }}</p>
-    {{ content | safe }}
-    <a href="/blog/" class="back-link">← Back to Blog</a>
+    <p class="date">{{ date }}</p>
+    <p class="description" style="font-style: italic; color: var(--color-text-secondary); margin-bottom: 2rem;">{{ description }}</p>
+    <div class="content">
+        {{ content | safe }}
+    </div>
+    <a href="/" class="back-link">← Back to Book Finderr</a>
 </article>
