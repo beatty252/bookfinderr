@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Book Finderr</title>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        :root {
+            --color-cream: #FDF8F3;
+            --color-warm-white: #FFFBF7;
+            --color-tan: #E8DDD4;
+            --color-brown: #8B7355;
+            --color-dark-brown: #5C4A3A;
+            --color-forest: #4A6B5A;
+            --color-text: #3D3229;
+            --color-text-secondary: #6B5E52;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Source Sans 3', -apple-system, sans-serif;
+            background-color: var(--color-cream);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: var(--color-dark-brown); margin-bottom: 0.5rem; }
+        .date { color: var(--color-text-secondary); margin-bottom: 2rem; }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--color-forest);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover { text-decoration: underline; }
+        article p { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    {{ content | safe }}
+</body>
+</html>
