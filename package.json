@@ -2,7 +2,14 @@
   "name": "bookfinderr",
   "version": "1.0.0",
   "description": "Book recommendation website",
+  "scripts": {
+    "build": "npx @11ty/eleventy",
+    "start": "npx @11ty/eleventy --serve"
+  },
   "dependencies": {
     "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.1"
   }
 }
