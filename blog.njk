@@ -1,0 +1,19 @@
+---
+layout: base.njk
+title: Blog
+permalink: /blog/
+---
+<a href="/" class="back-link" style="margin-bottom: 2rem; display: inline-block;">← Back to Book Finderr</a>
+
+<h1>Book Finderr Blog</h1>
+<p style="margin-bottom: 2rem; color: var(--color-text-secondary);">Discover book recommendations, reading tips, and insights into finding your next great read.</p>
+
+<div class="blog-grid" style="display: grid; gap: 1.5rem;">
+    {% for post in collections.posts reversed %}
+    <a href="{{ post.url }}" class="blog-card" style="background: var(--color-warm-white); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--color-tan); text-decoration: none; color: inherit; display: block;">
+        <h3 style="color: var(--color-dark-brown); margin-bottom: 0.5rem;">{{ post.data.title }}</h3>
+        <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 0.75rem;">{{ post.data.date | date: "%B %d, %Y" }}</p>
+        <p style="color: var(--color-text);">{{ post.data.description }}</p>
+    </a>
+    {% endfor %}
+</div>
