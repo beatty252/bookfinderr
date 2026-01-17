@@ -1,19 +1,205 @@
 ---
-layout: base.njk
-title: Blog
 permalink: /blog/
 ---
-<a href="/" class="back-link" style="margin-bottom: 2rem; display: inline-block;">← Back to Book Finderr</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Book Finderr</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FDF6E3;
+            --cream-dark: #F5ECD7;
+            --warm-white: #FFFEF9;
+            --burgundy: #8B2635;
+            --burgundy-light: #A63446;
+            --text-primary: #2C2416;
+            --text-secondary: #5C5347;
+            --text-muted: #8B8579;
+            --shadow-soft: 0 4px 20px rgba(44, 36, 22, 0.08);
+            --shadow-medium: 0 8px 30px rgba(44, 36, 22, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Source Sans 3', -apple-system, sans-serif;
+            background: var(--cream);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        nav {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--cream) 60%, transparent);
+        }
+        .logo {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon { width: 32px; height: 32px; }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--burgundy); }
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--burgundy);
+            background: transparent;
+            border: 2px solid var(--burgundy);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 32px;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background: var(--burgundy);
+            color: white;
+        }
+        .page-card {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: var(--shadow-medium);
+        }
+        .page-card h2 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        .page-card > p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .blog-grid {
+            display: grid;
+            gap: 24px;
+            margin-top: 32px;
+        }
+        .blog-preview {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--cream-dark);
+            text-decoration: none;
+            display: block;
+        }
+        .blog-preview:hover {
+            background: var(--warm-white);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+        }
+        .blog-preview-title {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .blog-preview-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .blog-preview-excerpt {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .read-more {
+            color: var(--burgundy);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        footer a { color: var(--burgundy); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 640px) {
+            nav { padding: 16px 20px; }
+            .nav-links { gap: 16px; }
+            .page-card { padding: 28px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">
+            <svg class="logo-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6 C4 4, 6 2, 16 2 C26 2, 28 4, 28 6 L28 26 C28 28, 26 30, 16 30 C6 30, 4 28, 4 26 Z"/>
+                <path d="M16 2 L16 30"/>
+                <path d="M4 8 C8 10, 12 10, 16 8"/>
+                <path d="M16 8 C20 10, 24 10, 28 8"/>
+            </svg>
+            Book Finderr
+        </a>
+        <div class="nav-links">
+            <a href="/blog/">Blog</a>
+            <a href="/#about" onclick="window.location.href='/';">About</a>
+            <a href="/#privacy" onclick="window.location.href='/';">Privacy</a>
+        </div>
+    </nav>
 
-<h1>Book Finderr Blog</h1>
-<p style="margin-bottom: 2rem; color: var(--color-text-secondary);">Discover book recommendations, reading tips, and insights into finding your next great read.</p>
+    <main>
+        <a href="/" class="back-button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Book Finderr
+        </a>
 
-<div class="blog-grid" style="display: grid; gap: 1.5rem;">
-{% for post in collections.posts | reverse %}
-<a href="{{ post.url }}" class="blog-card" style="background: var(--color-warm-white); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--color-tan); text-decoration: none; color: inherit; display: block;">
-    <h3 style="color: var(--color-dark-brown); margin-bottom: 0.5rem;">{{ post.data.title }}</h3>
-    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 0.75rem;">{{ post.data.date }}</p>
-    <p style="color: var(--color-text);">{{ post.data.description }}</p>
-</a>
-{% endfor %}
-</div>
+        <div class="page-card">
+            <h2>Book Finderr Blog</h2>
+            <p>Discover book recommendations, reading tips, and insights into finding your next great read.</p>
+
+            <div class="blog-grid">
+                {% for post in collections.posts | reverse %}
+                <a href="{{ post.url }}" class="blog-preview">
+                    <div class="blog-preview-title">{{ post.data.title }}</div>
+                    <div class="blog-preview-date">{{ post.data.date }}</div>
+                    <div class="blog-preview-excerpt">{{ post.data.description }}</div>
+                    <span class="read-more">Read more →</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Made with ♥ for book lovers everywhere</p>
+    </footer>
+</body>
+</html>
